@@ -9,9 +9,9 @@ class MoviesController < ApplicationController
   def index
     case params[:sort]
     when "title"
-      @movies = Movie.group(:title)
+      @movies = Movie.find(:all, :order => :title)
     when "date"
-      @movies = Movie.group(:release_date)
+      @movies = Movie.find(:all, :order => :release_date)
     else
       @movies = Movie.all
     end
