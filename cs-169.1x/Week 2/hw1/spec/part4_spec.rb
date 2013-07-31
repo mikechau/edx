@@ -25,6 +25,6 @@ describe "part4" do
     treat.delicious?.should == true
   end
 
-  # jellybean tests here...
+  # jellybean tests here... 
 
 end
