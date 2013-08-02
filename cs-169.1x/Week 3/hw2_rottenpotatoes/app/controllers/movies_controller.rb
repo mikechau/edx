@@ -8,28 +8,16 @@ class MoviesController < ApplicationController
 
   def index
 
-  if (params[:sort].blank? && params[:ratings].blank? && ! session[:sort].blank?)
-    flash.keep
-    redirect_to :sort => session[:sort], :ratings => session[:ratings]
-  end
-
-    @all_ratings = Movie.select("DISTINCT rating").map(&:rating)
-
-    @selected_ratings = params[:ratings] ? params[:ratings].respond_to?('keys') ? params[:ratings].keys : params[:ratings] : @all_ratings
-
-    movies_scope = Movie
-
-    movies_scope = movies_scope.send(:where, { :rating => @selected_ratings }) unless params[:ratings].nil?
-
-    movies_scope = movies_scope.send(:find, :all, :order => params[:sort]) unless params[:sort].nil?
-
-    if params[:sort].nil? && params[:ratings].nil?
-      movies_scope = movies_scope.send(:all)
+    if (params[:sort_by].blank? && params[:ratings].blank? && ! session[:sort_by].blank?)
+      flash.keep
+      redirect_to :sort_by => session[:sort_by], :ratings => session[:ratings]
     end
-
-    session[:sort] = params[:sort]
+    @sort_by = params[:sort_by] ? params[:sort_by] : 'id'
+    @all_ratings = Movie.select("DISTINCT rating").map(&:rating)
+    @selected_ratings = params[:ratings] ? params[:ratings].respond_to?('keys') ? params[:ratings].keys : params[:ratings] : @all_ratings
+    session[:sort_by] = @sort_by
     session[:ratings] = @selected_ratings
-    @movies = movies_scope
+    @movies = Movie.where({:rating => @selected_ratings}).find(:all, :order => @sort_by)
   end
 
   def new
