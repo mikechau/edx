@@ -7,14 +7,26 @@ class MoviesController < ApplicationController
   end
 
   def index
-    case params[:sort]
-    when "title"
-      @movies = Movie.find(:all, :order => :title)
-    when "date"
-      @movies = Movie.find(:all, :order => :release_date)
+
+    @all_ratings = Movie.select("DISTINCT rating").map(&:rating)
+
+    if params[:ratings].nil?
+      @selected_ratings = @all_ratings
     else
-      @movies = Movie.all
+      @selected_ratings = params[:ratings]
     end
+
+    movies_scope = Movie
+
+    movies_scope = movies_scope.send(:where, { :rating => params[:ratings] }) unless params[:ratings].nil?
+
+    movies_scope = movies_scope.send(:find, :all, :order => params[:sort]) unless params[:sort].nil?
+
+    if params[:sort].nil? && params[:ratings].nil?
+      movies_scope = movies_scope.send(:all)
+    end
+
+    @movies = movies_scope
   end
 
   def new
