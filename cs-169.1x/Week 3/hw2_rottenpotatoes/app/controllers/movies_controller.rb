@@ -10,15 +10,11 @@ class MoviesController < ApplicationController
 
     @all_ratings = Movie.select("DISTINCT rating").map(&:rating)
 
-    if params[:ratings].nil?
-      @selected_ratings = @all_ratings
-    else
-      @selected_ratings = params[:ratings]
-    end
+    @selected_ratings = params[:ratings] ? params[:ratings].respond_to?('keys') ? params[:ratings].keys : params[:ratings] : @all_ratings
 
     movies_scope = Movie
 
-    movies_scope = movies_scope.send(:where, { :rating => params[:ratings] }) unless params[:ratings].nil?
+    movies_scope = movies_scope.send(:where, { :rating => @selected_ratings }) unless params[:ratings].nil?
 
     movies_scope = movies_scope.send(:find, :all, :order => params[:sort]) unless params[:sort].nil?
 
